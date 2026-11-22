@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MARC</title>
+<style>
+:root{--shell:#1c2024;--lcd:#c9d8a2;--ink:#26331c;--dim:#8d9784;color-scheme:dark}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%;background:var(--shell);color:#e8ece0;font-family:ui-rounded,"Trebuchet MS",system-ui,sans-serif}
+main{min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:24px;text-align:center}
+.lcd{background:var(--lcd);border:6px solid #0f1214;border-radius:18px;padding:6px}
+canvas{width:96px;height:96px;display:block;image-rendering:pixelated}
+h1{font-size:32px;letter-spacing:2px}
+p{color:var(--dim);font-size:14px;max-width:320px;line-height:1.4}
+input{width:min(320px,100%);padding:14px;border-radius:10px;border:2px solid #2c3238;background:#0f1214;color:#e8ece0;font-size:20px;text-align:center}
+button{width:min(320px,100%);padding:16px;border:0;border-radius:12px;background:var(--lcd);color:var(--ink);font:inherit;font-size:20px;font-weight:700;box-shadow:0 4px 0 #7f9159}
+button:active{transform:translateY(3px);box-shadow:0 1px 0 #7f9159}
+#err{color:#ff7a5c;min-height:18px}
+@media (orientation:landscape) and (max-height:480px){main{flex-direction:row;flex-wrap:wrap;gap:10px 24px}}
+</style>
+</head>
+<body>
+<main>
+  <div class="lcd"><canvas id="p" width="32" height="32"></canvas></div>
+  <h1>MARC</h1>
+  <p>Введите адрес из окна программы на компьютере. Достаточно цифр, например 192.168.0.5</p>
+  <input id="a" placeholder="192.168.0.5" inputmode="decimal" autocomplete="off">
+  <button id="go">Подключиться</button>
+  <p id="err"></p>
+  <p>Чтобы сменить адрес позже, нажмите «Назад» на телефоне.</p>
+</main>
+<script>
+const $ = s => document.querySelector(s), KEY = 'marcAddr';
+const c = $('#p').getContext('2d'), R = (x,y,w,h,col) => { c.fillStyle = col; c.fillRect(x,y,w,h); };
+R(0,0,32,32,'#c9d8a2'); R(15,2,2,4,'#26331c'); R(13,0,6,3,'#26331c');
+R(5,7,22,20,'#26331c'); R(6,8,20,18,'#c9d8a2');
+R(10,13,3,5,'#26331c'); R(19,13,3,5,'#26331c'); R(12,21,8,2,'#26331c');
+function norm(v){
+  v = v.trim().replace(/^https?:\/\//, '').replace(/\/+$/, '');
+  if (!v) return '';
+  if (!/:\d+$/.test(v)) v += ':8765';
+  return 'http://' + v;
+}
+function go(){
+  const u = norm($('#a').value);
+  if (!u){ $('#err').textContent = 'Введите адрес, например 192.168.0.5'; return; }
+  localStorage.setItem(KEY, $('#a').value.trim());
+  location.href = u;
+}
+$('#a').value = localStorage.getItem(KEY) || '';
+$('#go').onclick = go;
+$('#a').onkeydown = e => { if (e.key === 'Enter') go(); };
+const nav = performance.getEntriesByType('navigation')[0];
+if ($('#a').value && !(nav && nav.type === 'back_forward')) setTimeout(go, 700);
+</script>
+</body>
+</html>

@@ -1,0 +1,8 @@
+{
+  "appId": "com.marc.pet",
+  "appName": "MARC",
+  "webDir": "www",
+  "backgroundColor": "#1c2024",
+  "android": { "allowMixedContent": true },
+  "server": { "cleartext": true, "androidScheme": "https", "allowNavigation": ["*"] }
+}
